@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ผจญภัยปราสาทสามเหลี่ยม - เกมพื้นที่สามเหลี่ยม ป.6</title>
+<link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;600;700&family=Sarabun:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#ffe9a8;--bg2:#ffc1e3;--bg3:#b8e4ff;--ink:#2b2d42;--pri:#ff6b6b;--sec:#4d96ff;--ok:#2ecc71;--bad:#ff6b6b;--warn:#ffd93d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{font-family:'Mali','Sarabun',sans-serif;color:var(--ink);background:linear-gradient(135deg,var(--bg1),var(--bg2) 50%,var(--bg3));background-attachment:fixed;display:flex;justify-content:center;align-items:flex-start;padding:12px}
+.float-shapes{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.float-shapes span{position:absolute;width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:52px solid rgba(255,255,255,.45);animation:drift 14s linear infinite}
+@keyframes drift{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}
+#app{position:relative;z-index:1;width:100%;max-width:760px}
+.card{background:#fff;border-radius:28px;padding:20px;box-shadow:0 10px 0 rgba(0,0,0,.08),0 18px 40px rgba(0,0,0,.12);animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.94);opacity:0}to{transform:scale(1);opacity:1}}
+h1{font-size:clamp(26px,6vw,40px);margin:6px 0;color:var(--pri);text-align:center;line-height:1.25}
+h2{font-size:clamp(20px,4.5vw,28px);margin:8px 0}
+p{font-size:clamp(17px,3.6vw,21px);line-height:1.6;margin:8px 0}
+.center{text-align:center}
+.hidden{display:none!important}
+.btn{font-family:inherit;font-weight:700;font-size:clamp(20px,4.5vw,26px);border:none;border-radius:20px;padding:14px 26px;min-height:64px;cursor:pointer;color:#fff;background:var(--pri);box-shadow:0 7px 0 #c94a4a;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(6px);box-shadow:0 1px 0 #c94a4a}
+.btn.blue{background:var(--sec);box-shadow:0 7px 0 #2f6fcf}.btn.blue:active{box-shadow:0 1px 0 #2f6fcf}
+.btn.green{background:var(--ok);box-shadow:0 7px 0 #1f9d55}.btn.green:active{box-shadow:0 1px 0 #1f9d55}
+.btn.block{width:100%}
+.btnrow{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}.btnrow .btn{flex:1}
+.mutebtn{border:none;background:#fff3b0;border-radius:50%;width:44px;height:44px;font-size:22px;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.menu-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.menu-head h1{flex:1}
+.formula{background:#e8f4ff;border-radius:16px;padding:10px;text-align:center;font-weight:800;font-size:clamp(18px,4.2vw,26px);color:#1d5fb8;margin:10px 0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.gcard{font-family:inherit;text-align:left;border:4px solid #ffe08a;background:#fffdf0;border-radius:22px;padding:14px;cursor:pointer;box-shadow:0 7px 0 #f2cf63;transition:transform .08s;color:var(--ink)}
+.gcard:active{transform:translateY(6px);box-shadow:0 1px 0 #f2cf63}
+.gcard.feature{grid-column:1/-1;background:linear-gradient(135deg,#fff0f0,#fff6d6);border-color:var(--pri);box-shadow:0 7px 0 #c94a4a}
+.gcard .em{font-size:44px;display:block}
+.gcard b{display:block;font-size:clamp(20px,4.5vw,25px);margin:2px 0}
+.gcard small{display:block;font-size:clamp(15px,3.3vw,18px);line-height:1.45;color:#555}
+.gcard .st{font-size:22px;margin-top:6px;letter-spacing:2px}
+.how{background:#fff8dc;border:3px dashed var(--warn);border-radius:20px;padding:10px 16px 10px 14px;margin:14px 0}
+.how li{font-size:clamp(16px,3.5vw,21px);margin:8px 0;line-height:1.5}
+.bigem{font-size:80px;text-align:center;animation:bounce 2s ease-in-out infinite}
+@keyframes bounce{50%{transform:translateY(-12px) rotate(4deg)}}
+.hud{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.pill{background:#fff3b0;border-radius:999px;padding:6px 14px;font-weight:700;font-size:clamp(14px,3.2vw,18px)}
+.homebtn{border:none;background:#e8f4ff;border-radius:14px;min-height:44px;padding:6px 14px;font-family:inherit;font-weight:700;font-size:18px;cursor:pointer;box-shadow:0 3px 0 #bcd6f2}
+.bar{height:16px;background:#eee;border-radius:99px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffd93d,#ff6b6b);transition:width .4s;border-radius:99px}
+.qtext{font-size:clamp(19px,4.2vw,25px);font-weight:700;line-height:1.55;margin:6px 0 8px}
+.fig{background:#f4faff;border-radius:20px;padding:6px;margin:6px 0 12px}
+.fig svg{width:100%;height:auto;max-height:240px;display:block}
+.fig svg.free{max-height:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.opts{grid-template-columns:1fr}}
+.opt{font-family:inherit;font-weight:700;font-size:clamp(19px,4.4vw,25px);min-height:66px;border-radius:20px;border:4px solid #d6e4ff;background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 6px 0 #d6e4ff;transition:transform .08s;padding:10px}
+.opt:active{transform:translateY(5px);box-shadow:0 1px 0 #d6e4ff}
+.opt.right{background:#d4f8e0;border-color:var(--ok);box-shadow:0 6px 0 #1f9d55;animation:jump .5s}
+.opt.wrong{background:#ffe0e0;border-color:var(--bad);box-shadow:0 6px 0 #c94a4a;animation:shake .45s}
+.opt:disabled{cursor:default}
+.opts.col{grid-template-columns:1fr}
+.opts.col .opt{text-align:left;font-size:clamp(17px,3.8vw,22px)}
+@keyframes jump{40%{transform:scale(1.07)}}
+@keyframes shake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+.cbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:6px}
+.cbtn{font-family:inherit;font-weight:800;font-size:clamp(24px,6vw,34px);color:#fff;border:none;border-radius:18px;min-height:68px;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.cbtn:active{transform:translateY(5px);box-shadow:0 1px 0 rgba(0,0,0,.25)}
+.cbtn:disabled{opacity:.55}
+.fb{border-radius:20px;padding:12px 16px;margin-top:14px;font-size:clamp(17px,3.6vw,21px);line-height:1.6;animation:pop .3s}
+.fb.ok{background:#d4f8e0;border:3px solid var(--ok)}
+.fb.no{background:#fff0f0;border:3px solid var(--bad)}
+.fb b.big{display:block;font-size:clamp(21px,5vw,29px);margin-bottom:4px}
+.floatpts{position:fixed;left:50%;top:40%;font-size:48px;font-weight:800;color:var(--ok);text-shadow:0 3px 0 #fff;pointer-events:none;animation:up 1s forwards;z-index:20}
+@keyframes up{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,-120px);opacity:0}}
+.goal{background:#fff3b0;border-radius:16px;padding:10px 14px;font-size:clamp(19px,4.3vw,26px);font-weight:700;text-align:center}
+.calc{background:#e8f4ff;border-radius:14px;padding:8px;margin:8px 0;text-align:center;font-weight:800;font-size:clamp(18px,4vw,25px);color:#1d5fb8}
+.calc.match{background:#d4f8e0;color:#1f7a45}
+.ctrl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+.ctrl div{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#f6f6fb;border-radius:16px;padding:6px 8px;font-weight:700;font-size:clamp(16px,3.6vw,21px)}
+.ctrl button{width:52px;height:52px;border-radius:14px;border:none;font-size:30px;font-weight:800;color:#fff;cursor:pointer}
+.gmsg{min-height:30px;text-align:center;font-weight:700;font-size:clamp(16px,3.6vw,20px);color:#c0392b;margin:4px 0}
+.shop{background:#fff3b0;border-radius:16px;padding:8px 12px;text-align:center;font-weight:700;font-size:clamp(17px,3.8vw,22px);margin-bottom:10px}
+.customer{display:flex;gap:12px;align-items:center;background:#f4faff;border-radius:20px;padding:10px}
+.customer .face{font-size:56px}
+.bubble{background:#fffbe8;border:3px solid #ffd93d;border-radius:20px;padding:10px 14px;font-size:clamp(17px,3.8vw,22px);line-height:1.6;flex:1}
+.bubble .work{background:#fff;border-radius:12px;padding:6px 10px;margin-top:6px;font-weight:800;color:#c0392b}
+.big-score{font-size:clamp(56px,16vw,96px);font-weight:800;color:var(--sec);line-height:1}
+.stars{font-size:clamp(40px,10vw,64px);letter-spacing:6px}
+.stars span{display:inline-block;animation:starIn .6s backwards}
+@keyframes starIn{from{transform:scale(0) rotate(-180deg);opacity:0}}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+.stat{background:#f4faff;border-radius:16px;padding:10px;text-align:center}
+.stat b{display:block;font-size:clamp(22px,5vw,32px)}.stat small{font-size:clamp(13px,3vw,16px)}
+.review{max-height:200px;overflow:auto;background:#fff8f8;border-radius:16px;padding:8px 14px;margin:10px 0;font-size:clamp(15px,3.2vw,18px);line-height:1.7}
+canvas#confetti{position:fixed;inset:0;pointer-events:none;z-index:30}
+</style>
+</head>
+<body>
+<div class="float-shapes" id="shapes"></div>
+<canvas id="confetti"></canvas>
+
+<div id="app">
+
+  <section id="menu" class="card">
+    <div class="menu-head">
+      <div style="width:44px"></div>
+      <h1>🏰 ผจญภัยปราสาทสามเหลี่ยม</h1>
+      <button class="mutebtn" aria-label="เปิด/ปิดเสียง">🔊</button>
+    </div>
+    <p class="center"><b>คณิตศาสตร์ ป.6 · พื้นที่รูปสามเหลี่ยม</b></p>
+    <div class="formula">พื้นที่สามเหลี่ยม = ½ × ฐาน × สูง</div>
+    <p class="center">เลือกเกมที่อยากเล่นได้เลย! 👇</p>
+    <div class="grid" id="menuGrid"></div>
+  </section>
+
+  <section id="intro" class="card hidden">
+    <div class="bigem" id="inEm"></div>
+    <h1 id="inTitle"></h1>
+    <p class="center" id="inDesc"></p>
+    <div class="how"><h2>🎮 วิธีเล่น</h2><ol id="inHow"></ol></div>
+    <div class="btnrow">
+      <button class="btn blue" id="inBack">⬅ กลับ</button>
+      <button class="btn" id="inGo" style="flex:2">▶ เริ่มเล่น!</button>
+    </div>
+  </section>
+
+  <section id="play" class="card hidden">
+    <div class="hud">
+      <button class="homebtn" id="homeBtn2">🏠 เมนู</button>
+      <span class="pill" id="label"></span>
+      <span class="pill" id="combo">🔥 0</span>
+      <span class="pill" id="score">⭐ 0</span>
+      <button class="mutebtn" aria-label="เปิด/ปิดเสียง">🔊</button>
+    </div>
+    <div class="bar"><i id="barFill"></i></div>
+    <div id="sub"></div>
+    <div id="body"></div>
+    <div id="fbBox"></div>
+  </section>
+
+  <section id="result" class="card hidden">
+    <h1 id="rTitle"></h1>
+    <p class="center" id="rGame"></p>
+    <div class="center stars" id="rStars"></div>
+    <div class="center"><div class="big-score" id="rPct">0%</div></div>
+    <p class="center" id="rMsg"></p>
+    <div class="stats">
+      <div class="stat"><b id="rScore">0</b><small>คะแนนรวม</small></div>
+      <div class="stat"><b id="rRight">0/0</b><small>ตอบถูก</small></div>
+      <div class="stat"><b id="rCombo">0</b><small>คอมโบสูงสุด</small></div>
+    </div>
+    <div class="review" id="rReview"></div>
+    <div class="btnrow">
+      <button class="btn green" id="againBtn">🔄 เล่นใหม่</button>
+      <button class="btn blue" id="menuBtn">🏠 เลือกเกมอื่น</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const fmt=n=>Number.isInteger(n)?String(n):String(+n.toFixed(2));
+const money=n=>n.toLocaleString('th-TH');
+
+/* ---------- พื้นหลัง ---------- */
+for(let i=0;i<10;i++){const s=document.createElement('span');s.style.left=Math.random()*100+'%';s.style.animationDelay=(-Math.random()*14)+'s';s.style.animationDuration=(10+Math.random()*10)+'s';s.style.transform='scale('+(.5+Math.random())+')';$('shapes').appendChild(s)}
+
+/* ---------- เสียง ---------- */
+let ac,muted=false;
+function tone(freqs,dur=.15,type='triangle'){
+  if(muted)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+      const t=ac.currentTime+i*dur;g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);o.start(t);o.stop(t+dur)})}catch(e){}
+}
+document.querySelectorAll('.mutebtn').forEach(b=>b.onclick=()=>{muted=!muted;document.querySelectorAll('.mutebtn').forEach(x=>x.textContent=muted?'🔇':'🔊')});
+
+/* ---------- Confetti ---------- */
+const cv=$('confetti'),cx=cv.getContext('2d');let parts=[],anim=false;
+function resize(){cv.width=innerWidth;cv.height=innerHeight}addEventListener('resize',resize);resize();
+function confetti(n=80){
+  const cols=['#ff6b6b','#ffd93d','#4d96ff','#2ecc71','#ff9ff3','#a66cff'];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2,y:innerHeight/2.5,vx:(Math.random()-.5)*14,vy:-Math.random()*13-3,r:4+Math.random()*6,c:cols[i%cols.length],rot:Math.random()*6,vr:(Math.random()-.5)*.4,life:100+Math.random()*40});
+  if(!anim){anim=true;loop()}
+}
+function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.rot+=p.vr;p.life--;cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.fillStyle=p.c;cx.fillRect(-p.r,-p.r/2,p.r*2,p.r);cx.restore()});
+  parts=parts.filter(p=>p.life>0&&p.y<cv.height+20);
+  if(parts.length)requestAnimationFrame(loop);else{anim=false;cx.clearRect(0,0,cv.width,cv.height)}
+}
+
+/* ---------- สถานะเซสชัน ---------- */
+let S,current=null;
+function newSession(planned){S={score:0,right:0,total:0,combo:0,maxCombo:0,planned,log:[],coins:0};$('sub').innerHTML='';$('fbBox').innerHTML='';$('body').innerHTML='';updateHud()}
+function updateHud(){
+  $('combo').textContent='🔥 '+S.combo;$('score').textContent='⭐ '+S.score;
+  $('barFill').style.width=Math.min(100,S.total/S.planned*100)+'%';
+}
+function setLabel(t){$('label').textContent=t}
+function record(ok,pts,label){
+  S.total++;let gain=0;
+  if(ok){
+    S.right++;S.combo++;S.maxCombo=Math.max(S.maxCombo,S.combo);
+    gain=pts+((S.combo>=3&&pts>0)?5:0);S.score+=gain;
+    tone([523,659,784,1047],.1);confetti(S.combo>=3?110:45);
+    const f=document.createElement('div');f.className='floatpts';f.textContent='+'+gain;document.body.appendChild(f);setTimeout(()=>f.remove(),1000);
+  }else{S.combo=0;tone([300,220],.2,'sawtooth')}
+  S.log.push({ok,label});updateHud();
+  return gain;
+}
+const praise=()=>['เยี่ยมมาก! 🎉','ถูกต้อง! เก่งจัง 👏','สุดยอด! 🌟','ใช่เลย! 💪'][Math.floor(Math.random()*4)];
+function feedback(ok,html,label){
+  $('fbBox').innerHTML=`<div class="fb ${ok?'ok':'no'}">${html}</div><button class="btn blue block" id="nextBtn" style="margin-top:14px">${label||'ต่อไป ➜'}</button>`;
+  $('nextBtn').scrollIntoView({behavior:'smooth',block:'nearest'});
+  return new Promise(r=>{$('nextBtn').onclick=()=>{$('fbBox').innerHTML='';r()}});
+}
+function okHtml(why,gain){return `<b class="big">${praise()}</b>${why}${S.combo>=3?`<br>🔥 โบนัสคอมโบ! (+${gain} คะแนน)`:''}`}
+function noHtml(correct,why){return `<b class="big">ยังไม่ถูกนะ ไม่เป็นไร 😊</b>${correct?`คำตอบที่ถูกคือ <b>${correct}</b><br>`:''}💡 ${why}`}
+function banner(em,title,text,btn='ลุย! ⚔️'){
+  $('body').innerHTML=`<div class="center"><div class="bigem">${em}</div><h1>${title}</h1><p>${text}</p><button class="btn block" id="bnGo">${btn}</button></div>`;
+  $('sub').innerHTML='';
+  return new Promise(r=>{$('bnGo').onclick=r});
+}
+
+/* ---------- คำถามเลือกคำตอบ (ใช้ร่วมกัน) ---------- */
+async function mc(q){
+  $('body').innerHTML=`${q.top||''}<div class="qtext">${q.text}</div>${q.fig?`<div class="fig">${q.fig}</div>`:''}<div class="opts ${q.col?'col':''}" id="opts"></div>`;
+  const opts=shuffle(q.options.map(String));
+  const picked=await new Promise(res=>{opts.forEach(t=>{const b=document.createElement('button');b.className='opt';b.textContent=t;b.onclick=()=>res({t,b});$('opts').appendChild(b)})});
+  const ok=picked.t===String(q.correct);
+  document.querySelectorAll('#opts .opt').forEach(b=>{b.disabled=true;if(b.textContent===String(q.correct))b.classList.add('right')});
+  if(!ok)picked.b.classList.add('wrong');
+  const gain=record(ok,q.pts||10,q.label);
+  if(ok&&q.onOk)q.onOk();
+  await feedback(ok,ok?okHtml(q.why,gain):noHtml(q.showCorrect===false?'':q.correct,q.why));
+  return ok;
+}
+
+/* ---------- รูปสามเหลี่ยมพื้นฐาน ---------- */
+function T(x,y,s,c='#2b2d42',a='middle',fs=19){return `<text x="${x}" y="${y}" font-size="${fs}" font-weight="800" fill="${c}" text-anchor="${a}" font-family="Mali,Sarabun,sans-serif">${s}</text>`}
+function figure(t){
+  const col={fill:'#ffe08a',stroke:'#ff6b6b',h:'#4d96ff'},u=t.unit||'ซม.';
+  const b=t.base===undefined?'?':fmt(t.base)+' '+u,h=t.height===undefined?'?':fmt(t.height)+' '+u;
+  const bc=t.base===undefined?'#e63946':'#2b2d42',hc=t.height===undefined?'#e63946':col.h;
+  let s='<svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg">';
+  if(t.type==='acute'){
+    s+=`<polygon points="160,25 50,160 270,160" fill="${col.fill}" stroke="${col.stroke}" stroke-width="5" stroke-linejoin="round"/><line x1="160" y1="25" x2="160" y2="160" stroke="${col.h}" stroke-width="4" stroke-dasharray="8 6"/><polyline points="160,146 174,146 174,160" fill="none" stroke="${col.h}" stroke-width="3"/>`;
+    s+=T(160,188,'ฐาน = '+b,bc)+T(168,98,'สูง = '+h,hc,'start');
+  }else if(t.type==='right'){
+    s+=`<polygon points="70,25 70,160 260,160" fill="${col.fill}" stroke="${col.stroke}" stroke-width="5" stroke-linejoin="round"/><polyline points="70,146 84,146 84,160" fill="none" stroke="${col.h}" stroke-width="3"/>`;
+    s+=T(165,188,'ฐาน = '+b,bc)+T(60,98,'สูง = '+h,hc,'end');
+  }
+  return s+'</svg>';
+}
+function rectFig(w,h){
+  const U=Math.min(16,200/w),x=(320-w*U)/2,y=14;
+  return `<svg viewBox="0 0 320 ${h*U+60}"><rect x="${x}" y="${y}" width="${w*U}" height="${h*U}" fill="#e9f7ff" stroke="#4d96ff" stroke-width="3"/><polygon points="${x},${y} ${x+w*U},${y} ${x},${y+h*U}" fill="#ffe08a" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/><polygon points="${x+w*U},${y} ${x+w*U},${y+h*U} ${x},${y+h*U}" fill="#ffb86b" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/>${T(160,y+h*U+24,'ยาว '+w+' ซม.')}${T(x-6,y+h*U/2+6,'กว้าง '+h,'#2b2d42','end',16)}${T(x+w*U+6,y+h*U/2+6,'ซม.','#2b2d42','start',16)}</svg>`;
+}
+
+/* =================== เกม 1: นักสืบความสูง =================== */
+async function g1(n,tag){
+  for(let i=0;i<n;i++){
+    setLabel(`${tag} ${i+1}/${n}`);
+    const th=Math.random()*Math.PI*2,cs=Math.cos(th),sn=Math.sin(th);
+    const R=p=>[p[0]*cs-p[1]*sn+160,p[0]*sn+p[1]*cs+140];
+    const pt=p=>R(p).map(v=>v.toFixed(1)).join(',');
+    const obt=(i>=2&&i%2===0),sg=Math.random()<.5?-1:1;
+    const ax=sg*(obt?100+Math.random()*25:25+Math.random()*45);
+    const A=[ax,-45],B=[-85,45],C=[85,45],M=[0,45],F=[ax,45],near=sg>0?C:B;
+    const cols=['#ff922b','#9b5de5','#00a896'],names=['ก','ข','ค'];
+    const defs=shuffle([{k:'alt',q:F},{k:'med',q:M},{k:'side',q:near}]);
+    defs.forEach((d,j)=>{d.c=cols[j];d.n=names[j]});
+    const draw=reveal=>{
+      let s='<svg class="free" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" style="max-height:300px">';
+      s+=`<polygon points="${pt(A)} ${pt(B)} ${pt(C)}" fill="#ffe9a8" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/>`;
+      if(obt){const a=R(near),b=R(F);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#888" stroke-width="3" stroke-dasharray="6 6"/>`}
+      const b1=R(B),c1=R(C);
+      s+=`<line x1="${b1[0]}" y1="${b1[1]}" x2="${c1[0]}" y2="${c1[1]}" stroke="#1d5fb8" stroke-width="8" stroke-linecap="round"/>`;
+      const bl=R([0,75]);s+=T(bl[0],bl[1]+6,'ฐาน','#1d5fb8');
+      defs.forEach(d=>{
+        const a=R(A),b=R(d.q),m=[(a[0]+b[0])/2,(a[1]+b[1])/2],col=(reveal&&d.k==='alt')?'#2ecc71':d.c;
+        s+=`<g data-k="${d.k}" style="cursor:pointer"><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="transparent" stroke-width="30"/><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${col}" stroke-width="${reveal&&d.k==='alt'?7:5}" stroke-linecap="round"/><circle cx="${m[0]}" cy="${m[1]}" r="14" fill="${col}" stroke="#fff" stroke-width="2"/><text x="${m[0]}" y="${m[1]+7}" font-size="19" font-weight="800" fill="#fff" text-anchor="middle" font-family="Mali,Sarabun,sans-serif">${d.n}</text></g>`;
+      });
+      if(reveal){const d=ax>0?-1:1,z=12;s+=`<polyline points="${pt([F[0]+d*z,F[1]])} ${pt([F[0]+d*z,F[1]-z])} ${pt([F[0],F[1]-z])}" fill="none" stroke="#2ecc71" stroke-width="3"/>`}
+      return s+'</svg>';
+    };
+    $('body').innerHTML=`<div class="qtext">แตะเส้นที่เป็น <b>ความสูง</b> ของสามเหลี่ยม เมื่อ <b style="color:#1d5fb8">เส้นสีน้ำเงินหนา</b> คือฐาน</div><div class="fig" id="fg">${draw(false)}</div><div class="cbtns" id="cb">${defs.map(d=>`<button class="cbtn" data-k="${d.k}" style="background:${d.c}">${d.n}</button>`).join('')}</div>`;
+    const k=await new Promise(res=>document.querySelectorAll('#body [data-k]').forEach(e=>e.onclick=()=>res(e.dataset.k)));
+    const ok=k==='alt';
+    $('fg').innerHTML=draw(true);
+    document.querySelectorAll('#cb .cbtn').forEach(b=>b.disabled=true);
+    const gain=record(ok,10,`นักสืบความสูง ข้อ ${i+1}`);
+    const why={alt:'ความสูงต้อง <b>ตั้งฉาก</b> กับฐาน (ดูสัญลักษณ์มุมฉากสีเขียว) แม้จะอยู่นอกรูปก็ใช้ได้',med:'เส้นนี้ลากไปที่กึ่งกลางฐาน แต่ <b>ไม่ตั้งฉาก</b> จึงไม่ใช่ความสูง',side:'เส้นนี้คือ <b>ด้านเอียง</b> ของสามเหลี่ยม ไม่ใช่ความสูง'}[k];
+    await feedback(ok,ok?okHtml(why,gain):`<b class="big">ยังไม่ถูกนะ ไม่เป็นไร 😊</b>${why}<br>💡 เส้นสีเขียวคือความสูงที่ถูกต้อง`);
+  }
+}
+
+/* =================== เกม 2: ช่างสร้างสามเหลี่ยม =================== */
+async function g2(n,tag){
+  const targets=shuffle([24,15,18,30,36,20]).slice(0,n);
+  for(let i=0;i<n;i++){
+    setLabel(`${tag} ${i+1}/${n}`);
+    const goal=targets[i];let b=4,h=4,tries=0,drag=null;
+    $('body').innerHTML=`<div class="goal">🎯 สร้างสามเหลี่ยมให้มีพื้นที่ <b>${goal}</b> ตร.ซม.</div>
+      <div class="fig"><svg class="free" id="bsvg" viewBox="0 0 320 285"><g id="bg"></g></svg></div>
+      <div class="calc" id="calc"></div>
+      <div class="ctrl"><div><span style="color:#2f6fcf">ฐาน</span><button id="bm" style="background:#4d96ff">−</button><b id="bv"></b><button id="bp" style="background:#4d96ff">+</button></div>
+      <div><span style="color:#c94a4a">สูง</span><button id="hm" style="background:#ff6b6b">−</button><b id="hv"></b><button id="hp" style="background:#ff6b6b">+</button></div></div>
+      <div class="gmsg" id="gmsg">ลากจุดสีฟ้า/สีแดง หรือกดปุ่ม − + ได้เลย</div>
+      <button class="btn green block" id="chk">ตรวจคำตอบ ✅</button>`;
+    const svg=$('bsvg'),g=$('bg'),OX=30,OY=250,U=20;
+    const draw=()=>{
+      const ax=OX+b*U/2,ay=OY-h*U,bx=OX+b*U;let s='';
+      for(let k=0;k<=12;k++){s+=`<line x1="${OX+k*U}" y1="${OY-240}" x2="${OX+k*U}" y2="${OY}" stroke="#dbe9f7"/><line x1="${OX}" y1="${OY-k*U}" x2="${OX+240}" y2="${OY-k*U}" stroke="#dbe9f7"/>`}
+      s+=`<polygon points="${OX},${OY} ${bx},${OY} ${ax},${ay}" fill="#ffe08a" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/><line x1="${ax}" y1="${ay}" x2="${ax}" y2="${OY}" stroke="#4d96ff" stroke-width="3" stroke-dasharray="6 5"/>`;
+      s+=T(OX+b*U/2,OY+28,'ฐาน '+b+' ซม.','#2f6fcf','middle',17)+T(ax+10,(ay+OY)/2+6,'สูง '+h,'#c94a4a','start',17);
+      s+=`<circle data-h="b" cx="${bx}" cy="${OY}" r="15" fill="#4d96ff" stroke="#fff" stroke-width="3" style="cursor:ew-resize"/><circle data-h="h" cx="${ax}" cy="${ay}" r="15" fill="#ff6b6b" stroke="#fff" stroke-width="3" style="cursor:ns-resize"/>`;
+      g.innerHTML=s;
+      const a=b*h/2,c=$('calc');c.textContent=`พื้นที่ = ½ × ${b} × ${h} = ${fmt(a)} ตร.ซม.`;c.classList.toggle('match',a===goal);
+      $('bv').textContent=b;$('hv').textContent=h;
+    };
+    const sp=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
+    svg.onpointerdown=e=>{const t=e.target.closest('[data-h]');if(t){drag=t.dataset.h;svg.setPointerCapture(e.pointerId);e.preventDefault()}};
+    svg.onpointermove=e=>{if(!drag)return;const p=sp(e);if(drag==='b')b=Math.max(1,Math.min(12,Math.round((p.x-OX)/U)));else h=Math.max(1,Math.min(12,Math.round((OY-p.y)/U)));draw()};
+    svg.onpointerup=svg.onpointercancel=()=>{drag=null};
+    $('bm').onclick=()=>{b=Math.max(1,b-1);draw()};$('bp').onclick=()=>{b=Math.min(12,b+1);draw()};
+    $('hm').onclick=()=>{h=Math.max(1,h-1);draw()};$('hp').onclick=()=>{h=Math.min(12,h+1);draw()};
+    draw();
+    const pairs=[];for(let x=1;x<=12;x++)for(let y=x;y<=12;y++)if(x*y===goal*2)pairs.push([x,y]);
+    const res=await new Promise(r=>{$('chk').onclick=()=>{
+      tries++;const a=b*h/2;
+      if(a===goal){r(true);return}
+      if(tries>=3){r(false);return}
+      $('gmsg').textContent=`ตอนนี้ได้ ${fmt(a)} ตร.ซม. ${a>goal?'มากไป':'น้อยไป'} ลองใหม่ (เหลือ ${3-tries} ครั้ง)`;
+      tone([300,250],.12,'sawtooth');
+    }});
+    if(res){
+      const pts=[10,6,3][tries-1],gain=record(true,pts,`ช่างสร้าง ข้อ ${i+1}`);
+      const other=pairs.filter(p=>!(p[0]===b&&p[1]===h)&&!(p[0]===h&&p[1]===b)).slice(0,2).map(p=>`ฐาน ${p[0]} สูง ${p[1]}`).join(' หรือ ');
+      await feedback(true,okHtml(`½ × ${b} × ${h} = ${goal} ตร.ซม.<br>💡 ตอบได้หลายแบบ เช่น ${other||'แบบอื่น ๆ'}`,gain));
+    }else{
+      const [sb,sh]=pairs[0];b=sb;h=sh;draw();
+      record(false,0,`ช่างสร้าง ข้อ ${i+1}`);
+      await feedback(false,noHtml('',`ลองดูตัวอย่าง: ฐาน ${sb} × สูง ${sh} → ½ × ${sb} × ${sh} = ${goal} ตร.ซม. (ฐาน × สูง ต้องได้ ${goal*2})`));
+    }
+  }
+}
+
+/* =================== เกม 3: ตัดแล้วต่อ =================== */
+async function g3(n,tag,start=0){
+  const sets=[[8,5],[6,4],[10,6]];
+  for(let i=0;i<n;i++){
+    setLabel(`${tag} ${i+1}/${n}`);
+    const [w,h]=sets[(start+i)%3],U=18,rx=(320-w*U)/2,ry=14,c=[rx+w*U/2,ry+h*U/2];
+    const P=Math.random()<.5?[[0,0],[w,0],[0,h]]:[[w,0],[w,h],[0,h]];
+    const fixed=P.map(([x,y])=>[rx+x*U,ry+y*U]);
+    const target=fixed.map(([x,y])=>[2*c[0]-x,2*c[1]-y]);
+    const local=fixed.map(([x,y])=>[x-c[0],y-c[1]]);
+    const str=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    let px=160,py=225,rot=[0,90,270][Math.floor(Math.random()*3)],drag=null,off=[0,0],done=false;
+    $('body').innerHTML=`<div class="qtext">✂️ สี่เหลี่ยมผืนผ้ายาว ${w} ซม. กว้าง ${h} ซม. ถูกตัดตามเส้นทแยงมุม ลาก <b style="color:#e8590c">ชิ้นสีส้ม</b> ไปวางในกรอบเส้นประให้ครบรูป (กด 🔄 เพื่อหมุน)</div>
+      <div class="fig"><svg class="free" id="csvg" viewBox="0 0 320 320">
+      <rect x="${rx}" y="${ry}" width="${w*U}" height="${h*U}" fill="#fff" stroke="#9bb" stroke-width="2" stroke-dasharray="6 5"/>
+      <polygon points="${str(target)}" fill="rgba(77,150,255,.12)" stroke="#4d96ff" stroke-width="3" stroke-dasharray="7 5"/>
+      <polygon points="${str(fixed)}" fill="#ffe08a" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/>
+      <g id="piece" style="cursor:grab"><polygon points="${str(local)}" fill="#ffb86b" stroke="#e8590c" stroke-width="4" stroke-linejoin="round"/></g></svg></div>
+      <div class="gmsg" id="gmsg" style="color:#1d5fb8">ลากชิ้นส่วนสีส้มไปวางในกรอบเส้นประสีฟ้า</div>
+      <button class="btn blue block" id="rotBtn">🔄 หมุนชิ้นส่วน</button>`;
+    const svg=$('csvg'),piece=$('piece');
+    const place=()=>piece.setAttribute('transform',`translate(${px.toFixed(1)},${py.toFixed(1)}) rotate(${rot})`);
+    const sp=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse())};
+    place();
+    await new Promise(res=>{
+      $('rotBtn').onclick=()=>{if(done)return;rot=(rot+90)%360;place();tone([440],.06);if(Math.hypot(px-c[0],py-c[1])<30)trySnap()};
+      const trySnap=()=>{
+        if(Math.hypot(px-c[0],py-c[1])<30){
+          if(rot%360===180){done=true;px=c[0];py=c[1];place();res()}
+          else $('gmsg').textContent='ใกล้แล้ว! ลองกดหมุน 🔄 ให้พอดีรูป';
+        }
+      };
+      svg.onpointerdown=e=>{if(done)return;if(e.target.closest('#piece')){const p=sp(e);drag=true;off=[px-p.x,py-p.y];svg.setPointerCapture(e.pointerId);e.preventDefault()}};
+      svg.onpointermove=e=>{if(!drag||done)return;const p=sp(e);px=Math.max(0,Math.min(320,p.x+off[0]));py=Math.max(0,Math.min(320,p.y+off[1]));place()};
+      svg.onpointerup=svg.onpointercancel=()=>{if(!drag)return;drag=false;trySnap()};
+    });
+    const gain=record(true,10,`ตัดแล้วต่อ ${i+1}: ประกอบรูป`);
+    await feedback(true,okHtml(`สามเหลี่ยม 2 รูปที่เท่ากันต่อกันเป็น <b>สี่เหลี่ยมผืนผ้า</b> ยาว ${w} × กว้าง ${h} = ${w*h} ตร.ซม.`,gain),'ถามต่อ ➜');
+    const a=w*h/2;
+    await mc({text:`สี่เหลี่ยมผืนผ้ามีพื้นที่ ${w*h} ตร.ซม. แบ่งครึ่งได้สามเหลี่ยม 2 รูปเท่ากัน สามเหลี่ยม <b>1 รูป</b> มีพื้นที่เท่าไร?`,fig:rectFig(w,h),
+      options:[a+' ตร.ซม.',w*h+' ตร.ซม.',(w+h)+' ตร.ซม.',(w*h/4)+' ตร.ซม.'],correct:a+' ตร.ซม.',
+      why:`สามเหลี่ยม 1 รูปคือครึ่งหนึ่งของสี่เหลี่ยม ${w*h} ÷ 2 = ${a} ตร.ซม. นี่คือที่มาของ ½ ในสูตร!`,label:`ตัดแล้วต่อ ${i+1}: พื้นที่`});
+  }
+}
+
+/* =================== เกม 4: ร้านผ้าใบเรือ =================== */
+const CUSTOMERS=[
+  {f:'👨‍🌾',n:'ลุงชาวประมง',b:4,h:3,p:50},{f:'👩‍🍳',n:'ป้าแม่ค้า',b:6,h:5,p:40},
+  {f:'🧑‍✈️',n:'กัปตันเรือ',b:8,h:3,p:30},{f:'👧',n:'น้องมะลิ',b:5,h:4,p:60},{f:'🧓',n:'ตาผู้ใหญ่บ้าน',b:9,h:6,p:25}];
+function shopLevel(c){return c>=2000?'🚢 เรือใหญ่':c>=1200?'🚤 เรือเร็ว':c>=500?'⛵ เรือใบ':'🛶 เรือแจว'}
+function uniq(correct,list){const s=[];list.forEach(v=>{if(v!==correct&&!s.includes(v))s.push(v)});let k=1;while(s.length<3){const v=correct+k*2;if(!s.includes(v)&&v!==correct)s.push(v);k++}return [correct,...s.slice(0,3)]}
+async function g4(n,tag,start=0){
+  for(let i=0;i<n;i++){
+    const c=CUSTOMERS[(start+i)%CUSTOMERS.length],a=c.b*c.h/2,price=a*c.p;
+    setLabel(`${tag} ${i+1}/${n}`);
+    const top=()=>{ $('sub').innerHTML=`<div class="shop">🏪 ร้านผ้าใบเรือ · ${shopLevel(S.coins)} · 💰 ${money(S.coins)} บาท</div>`;
+      return `<div class="customer"><div class="face">${c.f}</div><div class="bubble"><b>${c.n}:</b> อยากได้ใบเรือสามเหลี่ยม ฐาน ${c.b} ม. สูง ${c.h} ม. ผ้าราคาตารางเมตรละ <b>${c.p} บาท</b> ช่วยคิดเงินหน่อยจ้า!</div></div>`};
+    await mc({top:top(),text:'ขั้นที่ 1: ผ้าใบเรือผืนนี้มีพื้นที่กี่ตารางเมตร?',fig:figure({type:'acute',base:c.b,height:c.h,unit:'ม.'}),
+      options:uniq(a,[c.b*c.h,c.b+c.h,a+2]).map(v=>v+' ตร.ม.'),correct:a+' ตร.ม.',
+      why:`½ × ${c.b} × ${c.h} = ${a} ตร.ม.`,label:`ร้านผ้า ลูกค้า ${i+1}: พื้นที่`,pts:5});
+    await mc({top:top(),text:`ขั้นที่ 2: ผ้า ${a} ตร.ม. ราคาตารางเมตรละ ${c.p} บาท ลูกค้าต้องจ่ายกี่บาท?`,
+      options:uniq(price,[c.b*c.h*c.p,a+c.p,price+c.p]).map(v=>money(v)+' บาท'),correct:money(price)+' บาท',
+      why:`${a} × ${c.p} = ${money(price)} บาท เงินเข้าร้านแล้ว! 💰`,label:`ร้านผ้า ลูกค้า ${i+1}: ราคา`,pts:5,
+      onOk:()=>{S.coins+=price;top()}});
+  }
+}
+
+/* =================== เกม 5: จับผิดเพื่อน =================== */
+function slantFig(){
+  return `<svg viewBox="0 0 320 190"><polygon points="40,40 40,150 280,150" fill="#ffe08a" stroke="#ff6b6b" stroke-width="5" stroke-linejoin="round"/><polyline points="40,136 54,136 54,150" fill="none" stroke="#4d96ff" stroke-width="3"/>${T(160,180,'12 ซม.')}${T(32,100,'5 ซม.','#2b2d42','end')}${T(185,88,'13 ซม.','#c0392b','start')}</svg>`;
+}
+const MISTAKES=[
+  {f:'👧',n:'น้องมะลิ',q:'ฐาน 10 ซม. สูง 6 ซม. หาพื้นที่สามเหลี่ยม',work:'10 × 6 = 60 ตร.ซม.',
+   opts:['ลืมหารสอง (ลืมคูณ ½)','ใช้ความสูงผิดเส้น','เขียนหน่วยผิด','คูณเลขผิด'],correct:'ลืมหารสอง (ลืมคูณ ½)',why:'พื้นที่สามเหลี่ยมคือครึ่งหนึ่งของ ฐาน × สูง ที่ถูกคือ ½ × 10 × 6 = 30 ตร.ซม.'},
+  {f:'🧒',n:'น้องกล้า',q:'หาพื้นที่สามเหลี่ยมมุมฉากรูปนี้',work:'½ × 12 × 13 = 78 ตร.ซม.',fig:slantFig(),
+   opts:['เอา 13 (ด้านเอียง) มาเป็นความสูง','ลืมคูณ ½','บวกแทนการคูณ','ถูกต้องแล้ว'],correct:'เอา 13 (ด้านเอียง) มาเป็นความสูง',why:'ด้านเอียง 13 ซม. ไม่ใช่ความสูง ความสูงที่ตั้งฉากกับฐานคือ 5 ซม. ที่ถูกคือ ½ × 12 × 5 = 30 ตร.ซม.'},
+  {f:'👦',n:'น้องภู',q:'ฐาน 8 ซม. สูง 5 ซม. หาพื้นที่สามเหลี่ยม',work:'½ × 8 × 5 = 20 ซม.',
+   opts:['เขียนหน่วยผิด ต้องเป็น ตร.ซม.','ลืมคูณ ½','เอาฐานไปบวกกับสูง','คำนวณเลขผิด'],correct:'เขียนหน่วยผิด ต้องเป็น ตร.ซม.',why:'ตัวเลข 20 ถูกแล้ว แต่พื้นที่ต้องมีหน่วยเป็น "ตารางหน่วย" จึงต้องเขียน 20 ตร.ซม.'},
+  {f:'👩',n:'พี่ฝน',q:'สามเหลี่ยมมีพื้นที่ 30 ตร.ซม. ฐาน 6 ซม. ความสูงเท่าไร?',work:'30 ÷ 6 = 5 ซม.',
+   opts:['ลืมคูณ 2 ก่อนหาร','ลืมหน่วย','หารเลขผิด','ใช้พื้นที่เป็นความสูง'],correct:'ลืมคูณ 2 ก่อนหาร',why:'จาก พื้นที่ = ½ × ฐาน × สูง ต้องคูณ 2 ก่อน: 30 × 2 ÷ 6 = 10 ซม.'},
+  {f:'🧑',n:'พี่ต้น',q:'ฐาน 9 ซม. สูง 4 ซม. หาพื้นที่สามเหลี่ยม',work:'(9 + 4) ÷ 2 = 6.5 ตร.ซม.',
+   opts:['บวกฐานกับสูง แทนที่จะคูณ','ลืมหน่วย','ใช้ด้านเอียงเป็นความสูง','ไม่มีข้อผิดพลาด'],correct:'บวกฐานกับสูง แทนที่จะคูณ',why:'ต้องใช้ ฐาน × สูง ไม่ใช่บวก ที่ถูกคือ ½ × 9 × 4 = 18 ตร.ซม.'}
+];
+async function g5(n,tag,start=0){
+  for(let i=0;i<n;i++){
+    const m=MISTAKES[(start+i)%MISTAKES.length];
+    setLabel(`${tag} ${i+1}/${n}`);
+    await mc({text:`🔍 ${m.n}ทำโจทย์ข้อนี้ผิด! ช่วยหาหน่อยว่าผิดตรงไหน?`,
+      top:`<div class="customer" style="margin-bottom:10px"><div class="face">${m.f}</div><div class="bubble"><b>โจทย์:</b> ${m.q}<div class="work">${m.work}</div></div></div>`,
+      fig:m.fig,options:m.opts,correct:m.correct,why:m.why,col:true,label:`จับผิด ${m.n}`});
+  }
+}
+
+/* =================== ผจญภัยปราสาท (รวมเกม) =================== */
+function houseFig(){
+  return `<svg viewBox="0 0 320 245"><polygon points="50,105 160,25 270,105" fill="#ff9f7a" stroke="#c0392b" stroke-width="4" stroke-linejoin="round"/><rect x="60" y="105" width="200" height="125" fill="#ffe08a" stroke="#ff6b6b" stroke-width="4"/><line x1="160" y1="25" x2="160" y2="105" stroke="#4d96ff" stroke-width="3" stroke-dasharray="6 5"/>${T(168,70,'หลังคาสูง 3 ม.','#1d5fb8','start',15)}${T(160,176,'กว้าง 8 ม.')}${T(66,170,'สูง','#2b2d42','start',15)}${T(66,190,'5 ม.','#2b2d42','start',15)}${T(160,240,'หลังคา = สามเหลี่ยม ฐานเท่ากับความกว้าง','#555','middle',13)}</svg>`;
+}
+function twoTriFig(){
+  return `<svg viewBox="0 0 320 210"><polygon points="50,100 270,100 150,30" fill="#ffe08a" stroke="#ff6b6b" stroke-width="4" stroke-linejoin="round"/><polygon points="50,100 270,100 170,160" fill="#bfe6ff" stroke="#4d96ff" stroke-width="4" stroke-linejoin="round"/><line x1="150" y1="30" x2="150" y2="100" stroke="#c0392b" stroke-width="3" stroke-dasharray="6 5"/><line x1="170" y1="100" x2="170" y2="160" stroke="#1d5fb8" stroke-width="3" stroke-dasharray="6 5"/>${T(158,70,'สูง 4','#c0392b','start',16)}${T(178,136,'สูง 3','#1d5fb8','start',16)}${T(160,190,'ฐานร่วม = 10 ซม.')}</svg>`;
+}
+function shadeFig(){
+  return `<svg viewBox="0 0 320 210"><rect x="40" y="15" width="240" height="144" fill="#9be7a5" stroke="#2b2d42" stroke-width="3"/><polygon points="88,159 232,159 160,15" fill="#fff" stroke="#2b2d42" stroke-width="3" stroke-linejoin="round"/>${T(160,128,'ฐาน 6','#2b2d42','middle',17)}${T(160,188,'ยาว 10 ซม.')}${T(34,92,'สูง 6','#2b2d42','end',16)}</svg>`;
+}
+async function g6(){
+  await banner('🏰','ยินดีต้อนรับ นักผจญภัย!','มังกรสามเหลี่ยมยึดปราสาทไว้ ผ่านด่านทั้ง 5 ด่านและสู้กับบอสด้วยความรู้เรื่องพื้นที่สามเหลี่ยม!','เข้าสู่ปราสาท 🚪');
+  await banner('🌉','ด่านที่ 1: สะพานนักสืบ','หาเส้น "ความสูง" ที่ถูกต้องเพื่อข้ามสะพาน');await g1(3,'🌉 ด่าน 1 ·');
+  await banner('🔨','ด่านที่ 2: โรงงานช่างสร้าง','สร้างสามเหลี่ยมให้ได้พื้นที่ตามที่ประตูต้องการ');await g2(2,'🔨 ด่าน 2 ·');
+  await banner('✂️','ด่านที่ 3: ห้องตัดแล้วต่อ','ต่อชิ้นส่วนที่แตกกระจายให้เป็นรูปสี่เหลี่ยม');await g3(1,'✂️ ด่าน 3 ·',2);
+  await banner('🧵','ด่านที่ 4: ตลาดผ้าใบเรือ','คิดเงินให้ลูกค้าของปราสาท');await g4(2,'🧵 ด่าน 4 ·',0);
+  await banner('🔍','ด่านที่ 5: หอจับผิด','ช่วยหาข้อผิดพลาดของนักคำนวณ');await g5(2,'🔍 ด่าน 5 ·',0);
+  await banner('🐉','บอสมังกรสามเหลี่ยม!','รูปผสมสุดท้าย! แบ่งเป็นสามเหลี่ยมแล้วบวก/ลบพื้นที่ให้ถูก','สู้เลย! 🔥');
+  const L='🐉 บอส';
+  setLabel(`${L} 1/3`);
+  await mc({text:'บ้านหลังนี้ประกอบด้วยสี่เหลี่ยมผืนผ้า (ตัวบ้าน) กับสามเหลี่ยม (หลังคา) พื้นที่รวมเท่าไร?',fig:houseFig(),
+    options:['52 ตร.ม.','64 ตร.ม.','40 ตร.ม.','12 ตร.ม.'],correct:'52 ตร.ม.',why:'ตัวบ้าน 8 × 5 = 40 หลังคา ½ × 8 × 3 = 12 รวม 40 + 12 = 52 ตร.ม.',label:'บอส 1: บ้านรูปผสม'});
+  setLabel(`${L} 2/3`);
+  await mc({text:'สามเหลี่ยมสองรูปใช้ฐานร่วมกัน (10 ซม.) รูปบนสูง 4 ซม. รูปล่างสูง 3 ซม. พื้นที่รวมเท่าไร?',fig:twoTriFig(),
+    options:['35 ตร.ซม.','70 ตร.ซม.','20 ตร.ซม.','30 ตร.ซม.'],correct:'35 ตร.ซม.',why:'รูปบน ½ × 10 × 4 = 20 รูปล่าง ½ × 10 × 3 = 15 รวม 35 ตร.ซม. (หรือ ½ × 10 × (4+3) = 35)',label:'บอส 2: สามเหลี่ยมสองรูป'});
+  setLabel(`${L} 3/3`);
+  await mc({text:'สี่เหลี่ยมผืนผ้ายาว 10 ซม. กว้าง 6 ซม. มีสามเหลี่ยมสีขาวอยู่ข้างใน พื้นที่ส่วนสีเขียวเท่าไร?',fig:shadeFig(),
+    options:['42 ตร.ซม.','18 ตร.ซม.','60 ตร.ซม.','21 ตร.ซม.'],correct:'42 ตร.ซม.',why:'สี่เหลี่ยม 10 × 6 = 60 สามเหลี่ยมขาว ½ × 6 × 6 = 18 ส่วนสีเขียว 60 − 18 = 42 ตร.ซม.',label:'บอส 3: พื้นที่แรเงา'});
+}
+
+/* ---------- รายการเกม ---------- */
+const GAMES={
+  g6:{em:'🏰',title:'ผจญภัยปราสาทสามเหลี่ยม',desc:'ภารกิจใหญ่! ผ่าน 5 ด่าน (รวมทุกเกมย่อย) แล้วสู้บอสรูปผสม',
+    how:['เดินผ่านด่านทีละด่าน ทุกด่านคือเกมย่อยที่ย่อส่วนมา','ตอบถูกได้คะแนน ตอบถูกติดกันได้โบนัสคอมโบ','ด่านสุดท้ายคือบอส ต้องใช้ความรู้รูปผสม','ตอบผิดไม่เป็นไร มีคำอธิบายให้เสมอ'],planned:16,run:()=>g6(),feature:true},
+  g1:{em:'🕵️',title:'นักสืบความสูง',desc:'แตะเส้นความสูงที่ถูกต้องของสามเหลี่ยมที่หมุนอยู่',
+    how:['เส้นสีน้ำเงินหนาคือ "ฐาน"','ความสูง = เส้นจากยอดที่ <b>ตั้งฉาก</b> กับฐาน','แตะที่เส้น หรือกดปุ่ม ก ข ค ก็ได้','ระวัง! ด้านเอียงและเส้นกึ่งกลางไม่ใช่ความสูง'],planned:5,run:()=>g1(5,'🕵️ ข้อ')},
+  g2:{em:'🔨',title:'ช่างสร้างสามเหลี่ยม',desc:'ลากปรับฐานและสูงให้ได้พื้นที่ตามเป้าหมาย',
+    how:['ดูพื้นที่เป้าหมายด้านบน','ลากจุดสีฟ้า (ฐาน) กับจุดสีแดง (สูง) หรือกดปุ่ม − +','ดูพื้นที่เปลี่ยนสด ๆ แล้วกด "ตรวจคำตอบ"','ตอบได้หลายแบบ! มี 3 โอกาสต่อข้อ'],planned:4,run:()=>g2(4,'🔨 ข้อ')},
+  g3:{em:'✂️',title:'ตัดแล้วต่อ',desc:'ต่อสามเหลี่ยม 2 รูปให้เป็นสี่เหลี่ยม แล้วค้นพบที่มาของ ½',
+    how:['ลากชิ้นสีส้มไปวางในกรอบเส้นประ','กดปุ่ม 🔄 หมุนชิ้นส่วนให้พอดี','ดูว่าต่อกันได้รูปอะไร','ตอบพื้นที่ของสามเหลี่ยม 1 รูป'],planned:6,run:()=>g3(3,'✂️ ข้อ')},
+  g4:{em:'🧵',title:'ร้านผ้าใบเรือ',desc:'คิดพื้นที่ผ้าและราคาให้ลูกค้า สะสมเงินอัปเกรดร้าน',
+    how:['ลูกค้าสั่งใบเรือสามเหลี่ยม','ขั้น 1 หาพื้นที่ผ้า ขั้น 2 คิดราคา','ตอบถูกได้เงินเข้าร้าน','อัปเกรดร้านจาก 🛶 ไปเป็น 🚢'],planned:10,run:()=>g4(5,'🧵 ลูกค้า')},
+  g5:{em:'🔍',title:'จับผิดเพื่อน',desc:'หาข้อผิดพลาดในวิธีทำของเพื่อน ๆ',
+    how:['เพื่อนทำโจทย์แต่มีข้อผิดพลาด','อ่านวิธีทำให้ดี','เลือกว่าผิดตรงไหน','ได้ทบทวนข้อผิดพลาดที่พบบ่อย'],planned:5,run:()=>g5(5,'🔍 ข้อ')}
+};
+const ORDER=['g6','g1','g2','g3','g4','g5'];
+
+/* ---------- คะแนนที่ดีที่สุด ---------- */
+function loadBest(){try{return JSON.parse(localStorage.getItem('triAdventureBest')||'{}')}catch(e){return {}}}
+function saveBest(id,st){try{const b=loadBest();if((b[id]||0)<st){b[id]=st;localStorage.setItem('triAdventureBest',JSON.stringify(b))}}catch(e){}}
+
+/* ---------- เมนู ---------- */
+function show(id){['menu','intro','play','result'].forEach(s=>$(s).classList.toggle('hidden',s!==id));scrollTo(0,0)}
+function renderMenu(){
+  const best=loadBest();
+  $('menuGrid').innerHTML='';
+  ORDER.forEach(id=>{
+    const g=GAMES[id],st=best[id]||0;
+    const b=document.createElement('button');b.className='gcard'+(g.feature?' feature':'');
+    b.innerHTML=`<span class="em">${g.em}</span><b>${g.title}${g.feature?' 🌟':''}</b><small>${g.desc}</small><div class="st">${'⭐'.repeat(st)}${'☆'.repeat(3-st)}</div>`;
+    b.onclick=()=>openIntro(id);$('menuGrid').appendChild(b);
+  });
+}
+function toMenu(){renderMenu();show('menu')}
+function openIntro(id){
+  current=id;const g=GAMES[id];
+  $('inEm').textContent=g.em;$('inTitle').textContent=g.title;$('inDesc').textContent=g.desc;
+  $('inHow').innerHTML=g.how.map(t=>`<li>${t}</li>`).join('');
+  show('intro');
+}
+async function runGame(id){
+  current=id;const g=GAMES[id];
+  newSession(g.planned);show('play');
+  await g.run();
+  finish();
+}
+function finish(){
+  const g=GAMES[current];show('result');
+  const pct=S.total?Math.round(S.right/S.total*100):0;
+  const stars=pct>=90?3:pct>=60?2:pct>=30?1:0;
+  let title,msg;
+  if(pct>=90){title='🏆 สุดยอดนักคณิตศาสตร์!';msg='เก่งมาก! คุณเข้าใจเรื่องนี้ได้อย่างดีเยี่ยม'}
+  else if(pct>=60){title='🎉 เก่งมาก!';msg='ทำได้ดีเลย ลองเล่นอีกรอบเพื่อให้ได้ดาวเต็มนะ'}
+  else if(pct>=30){title='💪 สู้ต่อไป!';msg='ใกล้แล้ว! จำสูตร ½ × ฐาน × สูง แล้วลองใหม่อีกครั้ง'}
+  else{title='🌱 เริ่มต้นที่ดี!';msg='ไม่เป็นไร ทบทวนคำอธิบายแล้วลองเล่นอีกรอบนะ'}
+  saveBest(current,stars);
+  $('rTitle').textContent=title;$('rMsg').textContent=msg;$('rGame').textContent=`${g.em} ${g.title}`;
+  $('rStars').innerHTML=[0,1,2].map(i=>`<span style="animation-delay:${i*.3}s">${i<stars?'⭐':'☆'}</span>`).join('');
+  $('rScore').textContent=S.score;$('rRight').textContent=`${S.right}/${S.total}`;$('rCombo').textContent=S.maxCombo;
+  let c=0;const el=$('rPct');el.textContent='0%';
+  const t=setInterval(()=>{c+=Math.max(1,Math.ceil(pct/25));if(c>=pct){c=pct;clearInterval(t)}el.textContent=c+'%'},40);
+  $('rReview').innerHTML='<b>📝 สรุปรายข้อ</b><br>'+S.log.map(h=>`${h.ok?'✅':'❌'} ${h.label}`).join('<br>');
+  if(pct>=60){confetti(160);setTimeout(()=>confetti(100),500);tone([523,659,784,1047,1319],.12)}
+}
+
+$('inGo').onclick=()=>runGame(current);
+$('inBack').onclick=toMenu;
+$('homeBtn2').onclick=toMenu;
+$('againBtn').onclick=()=>runGame(current);
+$('menuBtn').onclick=toMenu;
+renderMenu();
+</script>
+</body>
+</html>
